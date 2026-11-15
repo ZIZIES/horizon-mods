@@ -18,6 +18,7 @@ and the notes say what has actually been played.
 | `black_bar_concealer` | fixes skins drawn for the wrong arm model | untested |
 | `tiertagger` | PvP tiers on name tags / tab list | probably broken: tiers don't show for me |
 | `tree_feller` | sneak-break a log to fell and replant the tree | not played yet |
+| `crosscrosshair` | a crosshair you draw yourself on a 15x15 grid | not played yet |
 
 ## Layout
 
