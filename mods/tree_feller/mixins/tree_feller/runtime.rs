@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 pub const ID: &str = "tree_feller";
 pub const VERSION: &str = "1.0.0";
-pub const DESCRIPTION: &str = "Sneak and break a log to fell the whole tree: its logs and leaves break, the drops go to your inventory and a sapling is replanted.";
+pub const DESCRIPTION: &str = "Sneak and break a log with an axe to fell the whole tree: its logs and leaves break, the drops go to your inventory and a sapling is replanted.";
 
 /// More logs than this is no tree (a log wall, a cabin): nothing is felled.
 pub const MAX_LOGS: usize = 512;
@@ -125,6 +125,11 @@ pub fn is_soil(block: &str) -> bool {
     )
 }
 
+/// An axe by its name, should the game's `axes` tag not say.
+pub fn is_axe(item: &str) -> bool {
+    item.ends_with("_axe")
+}
+
 pub fn is_air(block: &str) -> bool {
     matches!(block, "minecraft:air" | "minecraft:cave_air" | "minecraft:void_air")
 }
@@ -214,6 +219,13 @@ mod tests {
     #[test]
     fn a_wall_of_logs_is_left() {
         assert_eq!(plan([0, 0, 0], |p| if p[1] == 0 { Cell::Log } else { leaf(1) }), None);
+    }
+
+    #[test]
+    fn axes_only() {
+        assert!(is_axe("minecraft:diamond_axe"));
+        assert!(!is_axe("minecraft:diamond_pickaxe"));
+        assert!(!is_axe("minecraft:oak_log"));
     }
 
     #[test]

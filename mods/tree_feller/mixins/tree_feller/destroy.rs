@@ -6,6 +6,13 @@ fn tree_feller_destroy(game: &mut crate::game::Game<'_>, pos: [i32; 3]) {
     if !game.native_on(tf::ID) || !game.native_authoritative() || !game.native_sneaking() {
         return;
     }
+    // Only with an axe in hand.
+    let axe = game.held().is_some_and(|s| {
+        tf::is_axe(&s.item) || game.res.items().item_in_tag("minecraft:axes", &s.item)
+    });
+    if !axe {
+        return;
+    }
     let log = game.native_block(pos);
     if !game.block_in_tag("minecraft:logs", &log) {
         return;
@@ -53,7 +60,8 @@ fn tree_feller_destroy(game: &mut crate::game::Game<'_>, pos: [i32; 3]) {
         let tool = held(game);
         let mut felled = true;
         for p in &plan.logs {
-            if held(game) != tool {
+            // (Bare hands stay bare hands: a drop may land in the slot.)
+            if tool.is_some() && held(game) != tool {
                 felled = false;
                 break;
             }
@@ -72,21 +80,47 @@ fn tree_feller_destroy(game: &mut crate::game::Game<'_>, pos: [i32; 3]) {
                     log::warn!("tree feller: the leaves at {p:?} stayed: {e}");
                 }
             }
-            let drops = std::mem::replace(&mut game.break_collect, outer).unwrap_or_default();
+            let mut drops =
+                std::mem::replace(&mut game.break_collect, outer).unwrap_or_default();
             game.inventory[game.selected] = hand;
-            for stack in drops {
-                game.give_or_drop(stack);
-            }
-            if let Some(sapling) = sapling {
-                for at in bases {
-                    tf::replant_later(tf::Replant {
-                        player,
-                        dimension: dimension.to_string(),
-                        pos: at,
-                        sapling: sapling.clone(),
-                    });
+            // A sapling a spot, out of what the leaves dropped, else out of
+            // the inventory; free in creative.
+            let mut planned = 0;
+            if let Some(sapling) = &sapling {
+                for at in &bases {
+                    let mut paid = game.creative;
+                    if !paid
+                        && let Some(stack) =
+                            drops.iter_mut().find(|d| &*d.item == sapling.as_str() && d.count > 0)
+                    {
+                        stack.count -= 1;
+                        paid = true;
+                    }
+                    if !paid {
+                        paid = game.native_take_items(sapling, 1) == 1;
+                    }
+                    if paid {
+                        planned += 1;
+                        tf::replant_later(tf::Replant {
+                            player,
+                            dimension: dimension.to_string(),
+                            pos: *at,
+                            sapling: sapling.clone(),
+                        });
+                    }
                 }
             }
+            log::info!(
+                "tree feller: felled {} logs and {} leaves at {pos:?}; sapling {sapling:?}, {} spots on soil, {planned} to plant",
+                plan.logs.len() + 1,
+                plan.leaves.len(),
+                bases.len(),
+            );
+            for stack in drops.into_iter().filter(|d| d.count > 0) {
+                game.give_or_drop(stack);
+            }
+        } else {
+            log::info!("tree feller: the tool broke, felling stopped at {pos:?}");
         }
     }
     tf::end();
