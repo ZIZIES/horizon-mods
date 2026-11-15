@@ -1,0 +1,110 @@
+[mod]
+id = "tiertagger"
+version = "1.0.0"
+priority = 100
+
+# Pinned: it changes what two functions of the game's own answer.
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client-render/src/tab_list.rs"
+name = "tiertagger"
+source = "runtime.rs"
+visibility = "pub"
+
+[[module]]
+id = "net"
+file = "crates/horizon-client-render/src/tab_list.rs"
+name = "tiertagger_net"
+source = "net.rs"
+visibility = "pub"
+
+[[module]]
+id = "names"
+file = "crates/horizon-client/src/game/remote.rs"
+name = "tiertagger_names"
+source = "names.rs"
+visibility = "pub(crate)"
+
+# crates/horizon-client-render/src/tab_list.rs
+# pub fn name_for_display(p: &TabPlayer, board: &Scoreboard) -> Text
+[[injection]]
+id = "tab"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::tab_list::name_for_display"
+helper = "tab.rs"
+bindings = [
+  { name = "p", ty = "&crate::tab_list::TabPlayer", value = "p" },
+  { name = "board", ty = "&Scoreboard", value = "board" },
+]
+
+# crates/horizon-client/src/game/names.rs
+# fn collect_name_tags(&self, camera, alpha, hooks, frustum) -> Vec<NameTag>
+[[injection]]
+id = "hooks"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client::game::names::Game<'_>::collect_name_tags"
+helper = "hooks.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "camera", ty = "glam::DVec3", value = "camera" },
+  { name = "alpha", ty = "f64", value = "alpha" },
+  { name = "hooks", ty = "bool", value = "hooks" },
+  { name = "frustum", ty = "Option<&horizon_client::gfx::Frustum>", value = "frustum" },
+]
+
+[[injection]]
+id = "tag"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_render_name_tag"
+helper = "tag.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
+  { name = "entity_id", ty = "u32", value = "entity_id" },
+  { name = "kind", ty = "&str", value = "kind" },
+  { name = "text", ty = "&mut Option<String>", value = "&mut *text" },
+]
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "frame"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_frame"
+helper = "frame.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "settings"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings"
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "click"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings_click"
+helper = "click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]

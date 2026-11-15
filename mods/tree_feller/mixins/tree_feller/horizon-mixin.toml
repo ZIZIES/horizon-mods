@@ -1,0 +1,44 @@
+[mod]
+id = "tree_feller"
+version = "1.0.0"
+priority = 100
+
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client/src/game/native_player_break.rs"
+name = "tree_feller"
+source = "runtime.rs"
+visibility = "pub(crate)"
+
+# crates/horizon-client/src/game/native_hooks.rs
+# pub(super) fn native_destroy_block(&mut self, pos: [i32; 3], state: BlockStateId, canceled: &mut bool)
+[[injection]]
+id = "destroy"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_destroy_block"
+helper = "destroy.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+]
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "frame"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_frame"
+helper = "frame.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

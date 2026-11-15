@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-tree-feller"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Tree Feller for Horizon: sneak and break a log to fell the whole tree, leaves included, and replant it."
+
+[lib]
+path = "mixins/tree_feller/runtime.rs"

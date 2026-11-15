@@ -1,0 +1,71 @@
+[mod]
+id = "black_bar_concealer"
+version = "1.0.0"
+priority = 100
+
+# Pinned: it answers for a function of the game's own.
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client-render/src/skins.rs"
+name = "black_bar_concealer"
+source = "runtime.rs"
+visibility = "pub"
+
+# crates/horizon-client-render/src/skins.rs
+# pub fn process_legacy_skin(width: u32, height: u32, rgba: &[u8]) -> Option<Vec<u8>>
+[[injection]]
+id = "note"
+kind = "HEAD"
+target = "horizon_client_render::skins::process_legacy_skin"
+helper = "note.rs"
+bindings = [
+  { name = "width", ty = "u32", value = "width" },
+  { name = "height", ty = "u32", value = "height" },
+  { name = "rgba", ty = "&[u8]", value = "rgba" },
+]
+
+# crates/horizon-client/src/game/remote.rs
+# pub(super) fn update_remote_skins(&mut self)
+[[injection]]
+id = "skins"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client::game::remote::Game<'_>::update_remote_skins"
+helper = "skins.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "settings"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings"
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "click"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings_click"
+helper = "click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]

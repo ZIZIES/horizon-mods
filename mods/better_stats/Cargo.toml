@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-better-stats"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Statistics search for Horizon: a search box on the Statistics screen, after Better Statistics Screen."
+
+[lib]
+path = "mixins/better_stats/runtime.rs"

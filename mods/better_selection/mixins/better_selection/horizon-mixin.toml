@@ -1,0 +1,75 @@
+[mod]
+id = "better_selection"
+version = "1.0.0"
+priority = 100
+
+# Pinned: it answers for functions of the game's text field.
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client-render/src/ui.rs"
+name = "better_selection"
+source = "runtime.rs"
+visibility = "pub"
+
+# crates/horizon-client-render/src/ui.rs
+# pub fn word_position(value: &str, dir: isize, from: usize) -> usize
+[[injection]]
+id = "word"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::ui::word_position"
+helper = "word.rs"
+bindings = [
+  { name = "value", ty = "&str", value = "value" },
+  { name = "dir", ty = "isize", value = "dir" },
+  { name = "from", ty = "usize", value = "from" },
+]
+
+# pub fn key(&mut self, key: winit::keyboard::KeyCode, ctrl: bool, shift: bool) -> bool
+[[injection]]
+id = "key"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::ui::EditBox::key"
+helper = "key.rs"
+bindings = [
+  { name = "field", ty = "&mut crate::ui::EditBox", value = "&mut *self" },
+  { name = "key", ty = "winit::keyboard::KeyCode", value = "key" },
+  { name = "ctrl", ty = "bool", value = "ctrl" },
+  { name = "shift", ty = "bool", value = "shift" },
+]
+
+# pub fn click(&mut self, atlas: &HudAtlas, x: f32, shift: bool, double: bool)
+[[injection]]
+id = "click"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::ui::EditBox::click"
+helper = "click.rs"
+bindings = [
+  { name = "field", ty = "&mut crate::ui::EditBox", value = "&mut *self" },
+  { name = "atlas", ty = "&crate::hud::HudAtlas", value = "atlas" },
+  { name = "x", ty = "f32", value = "x" },
+  { name = "double", ty = "bool", value = "double" },
+]
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "frame"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_frame"
+helper = "frame.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

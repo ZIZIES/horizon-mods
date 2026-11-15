@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-tiertagger"
+version = "1.0.0"
+edition = "2024"
+license = "MPL-2.0"
+publish = false
+description = "TierTagger for Horizon: players' PvP tiers by their names."
+
+[lib]
+path = "mixins/tiertagger/runtime.rs"

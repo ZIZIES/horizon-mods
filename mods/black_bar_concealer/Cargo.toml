@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-black-bar-concealer"
+version = "1.0.0"
+edition = "2024"
+license = "CC0-1.0"
+publish = false
+description = "Black Bar Concealer for Horizon: no black bars on slim skins worn on the wide model."
+
+[lib]
+path = "mixins/black_bar_concealer/runtime.rs"

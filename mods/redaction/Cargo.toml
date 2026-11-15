@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-redaction"
+version = "1.0.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+description = "REDACTION for Horizon: a flat full-width hotbar, inventory snow, a rejoin button and a custom hand FOV."
+
+[lib]
+path = "mixins/redaction/runtime.rs"

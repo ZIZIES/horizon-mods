@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-better-selection"
+version = "1.0.0"
+edition = "2024"
+license = "Unlicense"
+publish = false
+description = "Better Selection for Horizon: text fields move and select by word the way editors do."
+
+[lib]
+path = "mixins/better_selection/runtime.rs"

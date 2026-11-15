@@ -1,0 +1,10 @@
+[package]
+name = "horizon-mod-force-close-loading-screen"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Force Close Loading Screen for Horizon: the terrain loading screen closes at once."
+
+[lib]
+path = "mixins/force_close_loading_screen/runtime.rs"

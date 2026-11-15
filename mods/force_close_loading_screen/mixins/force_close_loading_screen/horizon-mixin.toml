@@ -1,0 +1,57 @@
+[mod]
+id = "force_close_loading_screen"
+version = "1.0.0"
+priority = 100
+
+# Pinned: it answers for two methods of the game's level load tracker.
+[compatibility]
+horizon_revision = "9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0"
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client-render/src/level_loading.rs"
+name = "force_close_loading_screen"
+source = "runtime.rs"
+visibility = "pub"
+
+# crates/horizon-client-render/src/level_loading.rs
+# pub fn tick_client_load(&mut self, now: u64, player: PlayerCheck)
+[[injection]]
+id = "tick"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::level_loading::LevelLoadTracker::tick_client_load"
+helper = "tick.rs"
+bindings = [
+  { name = "tracker", ty = "&mut crate::level_loading::LevelLoadTracker", value = "&mut *self" },
+  { name = "now", ty = "u64", value = "now" },
+]
+
+# pub fn is_level_ready(&self, now: u64) -> bool
+[[injection]]
+id = "ready"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client_render::level_loading::LevelLoadTracker::is_level_ready"
+helper = "ready.rs"
+bindings = [
+  { name = "tracker", ty = "&crate::level_loading::LevelLoadTracker", value = "self" },
+]
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "frame"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_frame"
+helper = "frame.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]

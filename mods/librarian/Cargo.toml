@@ -1,0 +1,11 @@
+[package]
+name = "horizon-mod-librarian"
+version = "1.0.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+description = "Librarian for Horizon: pages of saved hotbars, with names, backups and overwrite protection."
+
+# The mod's logic and its tests: the same file the bundle adds to the game.
+[lib]
+path = "mixins/librarian/runtime.rs"
