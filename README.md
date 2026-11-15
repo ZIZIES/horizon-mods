@@ -16,7 +16,7 @@ and the notes say what has actually been played.
 | `redaction` | blackbar hotbar, hand FOV, last-server button, inventory snow | played, works |
 | `better_stats` | search box in Statistics | works for Items and Mobs, not General |
 | `black_bar_concealer` | fixes skins drawn for the wrong arm model | untested |
-| `tiertagger` | PvP tiers on name tags / tab list | broken: tiers don't show |
+| `tiertagger` | PvP tiers on name tags / tab list | probably broken: tiers don't show for me |
 | `tree_feller` | sneak-break a log to fell and replant the tree | not played yet |
 
 ## Layout
